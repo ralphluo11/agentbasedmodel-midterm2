@@ -32,7 +32,7 @@ class CultureAgent(Agent):
         """
         # von Neumann 邻域（上下左右 4 个），边角 agent 邻居少于 4 个
         neighbors = self.model.grid.get_neighbors(
-            self.pos, moore=False, include_center=False
+            self.pos, moore=self.model.moore, include_center=False
         )
         if not neighbors:
             return

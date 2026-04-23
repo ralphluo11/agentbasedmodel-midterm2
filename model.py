@@ -12,33 +12,32 @@ from collections import deque
 
 
 def count_regions(model):
-    """
-    计算文化区域数量 = 连通分量数量。
-    两个相邻格子属于同一 region 当且仅当文化完全相同。
-    用 BFS 遍历。
-    """
     visited = set()
     regions = 0
     width, height = model.grid.width, model.grid.height
-
+    
+    # 根据 moore 选择邻居方向
+    if model.moore:
+        directions = [(dx, dy) for dx in [-1, 0, 1] for dy in [-1, 0, 1] if (dx, dy) != (0, 0)]
+    else:
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    
     for x in range(width):
         for y in range(height):
             if (x, y) in visited:
                 continue
-            # 新 region 起点
             regions += 1
             start_agent = model.grid.get_cell_list_contents([(x, y)])[0]
             target_culture = tuple(start_agent.culture)
-
-            # BFS: 用队列（先进先出）扩展所有"相邻且文化相同"的格子
+            
             queue = deque([(x, y)])
             while queue:
-                cx, cy = queue.popleft()  # 从队头弹 → BFS
+                cx, cy = queue.popleft()
                 if (cx, cy) in visited:
                     continue
                 visited.add((cx, cy))
-                # 检查 von Neumann 邻居
-                for nx, ny in [(cx+1, cy), (cx-1, cy), (cx, cy+1), (cx, cy-1)]:
+                for dx, dy in directions:
+                    nx, ny = cx + dx, cy + dy
                     if not (0 <= nx < width and 0 <= ny < height):
                         continue
                     if (nx, ny) in visited:
@@ -55,7 +54,7 @@ def is_stable(model):
     """
     for agent in model.agents:
         neighbors = model.grid.get_neighbors(
-            agent.pos, moore=False, include_center=False
+            agent.pos, moore=model.moore, include_center=False
         )
         for n in neighbors:
             sim = agent.similarity(n)
@@ -75,6 +74,7 @@ class CultureModel(Model):
         height=10,
         num_features=5,
         num_traits=10,
+        moore=False,
         seed=None,
     ):
         super().__init__(seed=seed)
@@ -82,6 +82,7 @@ class CultureModel(Model):
         self.height = height
         self.num_features = num_features
         self.num_traits = num_traits
+        self.moore = moore
 
         # 非环形 grid（边角 agent 邻居少，符合原文）
         self.grid = SingleGrid(width, height, torus=False)

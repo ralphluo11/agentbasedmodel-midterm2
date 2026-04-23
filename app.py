@@ -56,6 +56,12 @@ model_params = {
         "max": 15,
         "step": 1,
     },
+    "moore": {
+    "type": "Select",
+    "value": False,
+    "values": [False, True],
+    "label": "Neighborhood (False=von Neumann/4, True=Moore/8)",
+    },
     "seed": {
         "type": "InputText",
         "value": "42",
@@ -69,6 +75,7 @@ def ParameterDisplay(model):
     """显示当前模型参数和运行状态"""
     # 触发重新渲染
     model.steps  # 访问这个属性让 Solara 知道要更新
+    neighborhood_name = "Moore (8)" if model.moore else "von Neumann (4)"
     
     solara.Markdown(
         f"""
@@ -77,7 +84,7 @@ def ParameterDisplay(model):
         - **Grid size:** {model.width} × {model.height} ({model.width * model.height} sites)
         - **Features (F):** {model.num_features}
         - **Traits per feature (q):** {model.num_traits}
-        - **Neighborhood:** von Neumann (4 neighbors)
+        - **Neighborhood:** {neighborhood_name}
         - **Torus:** {model.grid.torus}
         
         ### Status
