@@ -1,4 +1,5 @@
 import solara
+import colorsys
 from mesa.visualization import SolaraViz, make_space_component, make_plot_component
 
 from model import CultureModel
@@ -13,7 +14,6 @@ def agent_portrayal(agent):
     # 把文化映射成 0-1 之间的 hue
     h = (hash(culture_tuple) % 360) / 360
     # HSL 转 RGB（简单起见用 matplotlib 风格 hex）
-    import colorsys
     r, g, b = colorsys.hsv_to_rgb(h, 0.7, 0.9)
     color = f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
     return {

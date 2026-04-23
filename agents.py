@@ -2,22 +2,27 @@ from mesa import Agent
 
 class CultureAgent(Agent):
     """
-    Axelrod (1997) 文化传播模型中的一个"村庄"。
-    每个 agent 固定在 grid 上一个位置，有一个由 num_features 个
-    traits 组成的文化向量，每个 trait 取值 0 到 num_traits-1。
+    A "village" in the Axelrod (1997) cultural dissemination model.
+    Each agent is fixed at a position on the grid and has a cultural
+    vector of num_features traits, with each trait taking a value from
+    0 to num_traits - 1.
     """
 
     def __init__(self, model, num_features, num_traits):
         super().__init__(model)
         self.num_features = num_features
         self.num_traits = num_traits
-        # 随机初始化文化：例如 [8, 7, 2, 5, 4]
+        # Each feature is sampled independently and uniformly from [0, num_traits-1].
+        # Trait values are nominal labels (not ordered) — "3" and "7" are just two 
+        # different categories, not "closer" or "farther" than "3" and "4".
         self.culture = [
             self.random.randrange(num_traits) for _ in range(num_features)
         ]
 
     def similarity(self, other):
-        """共享 feature 的比例，范围 [0, 1]"""
+        # Cultural similarity = fraction of features with matching traits.
+        # Because traits are nominal (unordered), each feature contributes a binary
+        # match (equal or not) — no partial similarity within a feature.
         matches = sum(
             1 for a, b in zip(self.culture, other.culture) if a == b
         )
@@ -25,12 +30,12 @@ class CultureAgent(Agent):
 
     def step(self):
         """
-        Axelrod 的交互规则：
-        1. 随机挑一个邻居
-        2. 以 cultural similarity 为概率决定是否交互
-        3. 若交互，随机挑一个两者不同的 feature，把邻居的 trait 复制过来
+        The interaction rules of Axelrod (1997):
+        Randomly pick a neighbor, calculate cultural similarity, and with that probability interact:
+        if interact, randomly pick one of the features where they differ and copy that trait from the neighbor.
         """
-        # von Neumann 邻域（上下左右 4 个），边角 agent 邻居少于 4 个
+        # Get neighbors (von Neumann=4 or Moore=8 depending on model.moore), excluding self.
+        # Edge/corner agents have fewer neighbors (torus=False).
         neighbors = self.model.grid.get_neighbors(
             self.pos, moore=self.model.moore, include_center=False
         )
@@ -40,14 +45,14 @@ class CultureAgent(Agent):
         neighbor = self.random.choice(neighbors)
         sim = self.similarity(neighbor)
 
-        # 以相似度为概率交互
+        # With probability equal to similarity, interact and become more similar
         if self.random.random() < sim:
-            # 找出两者不同的 feature 索引
+            # Find the features where they differ
             diff_features = [
                 i for i in range(self.num_features)
                 if self.culture[i] != neighbor.culture[i]
             ]
-            # 如果完全相同就什么都不做（sim=1 时 diff 为空）
+            # if is indentical, then no interaction happens
             if diff_features:
                 f = self.random.choice(diff_features)
                 self.culture[f] = neighbor.culture[f]

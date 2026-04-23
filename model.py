@@ -102,19 +102,14 @@ class CultureModel(Model):
         self.datacollector.collect(self)
 
         self.running = True
-
+        
     def step(self):
-        """
-        Axelrod 一次 event = 激活一个随机 agent。
-        为了让 GUI 可视化更流畅，这里一步运行多个 events。
-        """
-        events_per_step = self.width * self.height  # 平均每个 agent 被激活一次
+        events_per_step = self.width * self.height
         for _ in range(events_per_step):
             agent = self.random.choice(list(self.agents))
             agent.step()
 
         self.datacollector.collect(self)
 
-        # 稳定后停止
         if is_stable(self):
             self.running = False
