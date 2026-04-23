@@ -7,22 +7,22 @@ from model import CultureModel
 
 def agent_portrayal(agent):
     """
-    把 agent 的文化向量映射成颜色。
-    简单做法：把文化元组 hash 成一个颜色，这样相同文化=相同颜色。
+    give each agent a color based on their culture (a tuple of traits) and a square marker
     """
     culture_tuple = tuple(agent.culture)
-    # 把文化映射成 0-1 之间的 hue
+    # Make a hash of the culture tuple and map it to a hue value in [0, 1]
     h = (hash(culture_tuple) % 360) / 360
-    # HSL 转 RGB（简单起见用 matplotlib 风格 hex）
+    # Convert HSV to RGB, with fixed saturation and value for bright colors
     r, g, b = colorsys.hsv_to_rgb(h, 0.7, 0.9)
     color = f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
     return {
         "color": color,
-        "marker": "s",  # 方块
+        "marker": "s",  
         "size": 200,
     }
 
-
+# define model parameters with types and default values for the SolaraViz interface 
+# moore is a boolean parameter that controls the neighborhood type (von Neumann or Moore)
 model_params = {
     "width": {
         "type": "SliderInt",
@@ -72,11 +72,10 @@ model_params = {
 
 @solara.component
 def ParameterDisplay(model):
-    """显示当前模型参数和运行状态"""
-    # 触发重新渲染
-    model.steps  # 访问这个属性让 Solara 知道要更新
+    # Access model.steps to trigger re-rendering when the model advances
+    model.steps  
     neighborhood_name = "Moore (8)" if model.moore else "von Neumann (4)"
-    
+    # Display model parameters to help user understand current state of the simulation
     solara.Markdown(
         f"""
         ### Model Parameters

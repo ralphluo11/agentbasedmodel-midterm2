@@ -1,12 +1,7 @@
-
-
 from mesa import Model
 from mesa.space import SingleGrid
 from agents import CultureAgent
 from mesa.datacollection import DataCollector
-
-
-
 
 from collections import deque
 
@@ -16,12 +11,12 @@ def count_regions(model):
     regions = 0
     width, height = model.grid.width, model.grid.height
     
-    # 根据 moore 选择邻居方向
+    # change directions based on neighborhood type (von Neumann or Moore)
     if model.moore:
         directions = [(dx, dy) for dx in [-1, 0, 1] for dy in [-1, 0, 1] if (dx, dy) != (0, 0)]
     else:
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-    
+    # use BFS to find connected components of agents with the same culture
     for x in range(width):
         for y in range(height):
             if (x, y) in visited:
@@ -49,8 +44,8 @@ def count_regions(model):
 
 def is_stable(model):
     """
-    检查系统是否已稳定：所有相邻 agent 对要么完全相同、要么完全不同。
-    没有"部分相似"的邻居对 => 没有可能的交互。
+    check if the system is stable: all neighboring agent pairs are either identical or completely different.
+    no "partially similar" neighbor pairs => no possible interactions.
     """
     for agent in model.agents:
         neighbors = model.grid.get_neighbors(
@@ -64,10 +59,14 @@ def is_stable(model):
 
 
 class CultureModel(Model):
+        """
+    Agents are fixed on a grid; each has a cultural vector of traits.
+    Interaction probability between neighbors equals their cultural
+    similarity, and interaction copies one differing trait from
+    neighbor to active agent. System is stable when all adjacent
+    pairs are either identical or completely different.
     """
-    Axelrod 1997 文化传播模型。
-    """
-
+ 
     def __init__(
         self,
         width=10,
@@ -77,17 +76,22 @@ class CultureModel(Model):
         moore=False,
         seed=None,
     ):
-        super().__init__(seed=seed)
+        # Convert string seed from UI input to int (or None if empty)
+        if isinstance(seed, str):
+            seed = int(seed) if seed.strip() else None
+        
+        super().__init__(seed=seed)  
+
         self.width = width
         self.height = height
         self.num_features = num_features
         self.num_traits = num_traits
         self.moore = moore
 
-        # 非环形 grid（边角 agent 邻居少，符合原文）
+        # make a non-toroidal grid (agents on edges have fewer neighbors, which can affect dynamics and stability)
         self.grid = SingleGrid(width, height, torus=False)
 
-        # 每个格点放一个 agent
+        # place one agent per cell
         for x in range(width):
             for y in range(height):
                 a = CultureAgent(self, num_features, num_traits)
@@ -104,6 +108,9 @@ class CultureModel(Model):
         self.running = True
         
     def step(self):
+        if not self.running:
+            return  # already stable, skip
+        
         events_per_step = self.width * self.height
         for _ in range(events_per_step):
             agent = self.random.choice(list(self.agents))
