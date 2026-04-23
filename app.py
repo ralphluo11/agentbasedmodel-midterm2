@@ -72,10 +72,8 @@ model_params = {
 
 @solara.component
 def ParameterDisplay(model):
-    # Access model.steps to trigger re-rendering when the model advances
-    model.steps  
-    neighborhood_name = "Moore (8)" if model.moore else "von Neumann (4)"
     # Display model parameters to help user understand current state of the simulation
+    neighborhood_name = "Moore (8)" if model.moore else "von Neumann (4)"
     solara.Markdown(
         f"""
         ### Model Parameters
@@ -85,14 +83,6 @@ def ParameterDisplay(model):
         - **Traits per feature (q):** {model.num_traits}
         - **Neighborhood:** {neighborhood_name}
         - **Torus:** {model.grid.torus}
-        
-        ### Status
-        
-        - **Step:** {model.steps}
-        - **Events per step:** {model.width * model.height}
-        - **Total events:** {model.steps * model.width * model.height:,}
-        - **Regions:** {model.datacollector.model_vars['Regions'][-1] if model.datacollector.model_vars['Regions'] else 'N/A'}
-        - **Stable:** {'✓ Yes' if not model.running else '✗ No (still evolving)'}
         """
     )
 

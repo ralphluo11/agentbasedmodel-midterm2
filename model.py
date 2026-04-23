@@ -59,14 +59,14 @@ def is_stable(model):
 
 
 class CultureModel(Model):
-        """
+    """
     Agents are fixed on a grid; each has a cultural vector of traits.
     Interaction probability between neighbors equals their cultural
     similarity, and interaction copies one differing trait from
     neighbor to active agent. System is stable when all adjacent
     pairs are either identical or completely different.
     """
- 
+
     def __init__(
         self,
         width=10,
