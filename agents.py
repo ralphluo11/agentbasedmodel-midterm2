@@ -36,9 +36,7 @@ class CultureAgent(Agent):
         """
         # Get neighbors (von Neumann=4 or Moore=8 depending on model.moore), excluding self.
         # Edge/corner agents have fewer neighbors (torus=False).
-        neighbors = self.model.grid.get_neighbors(
-            self.pos, moore=self.model.moore, include_center=False
-        )
+        neighbors = self.model.get_cultural_neighbors(self.pos)
         if not neighbors:
             return
 
