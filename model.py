@@ -136,9 +136,10 @@ class CultureModel(Model):
                 "Mean Similarity": mean_neighbor_similarity,
             }
         )
+        self.running = True
         self.datacollector.collect(self)
 
-        self.running = True
+        
     
     def get_cultural_neighbors(self, pos):
 

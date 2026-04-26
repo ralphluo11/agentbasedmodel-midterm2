@@ -7,22 +7,26 @@ from model import CultureModel
 
 def agent_portrayal(agent):
     """
-    give each agent a color based on their culture (a tuple of traits) and a square marker
+    Give each agent a color based on its culture and display it as a square marker.
     """
     culture_tuple = tuple(agent.culture)
-    # Make a hash of the culture tuple and map it to a hue value in [0, 1]
+
+    # Make a hash of the culture tuple and map it to a hue value in [0, 1].
     h = (hash(culture_tuple) % 360) / 360
-    # Convert HSV to RGB, with fixed saturation and value for bright colors
+
+    # Convert HSV to RGB, with fixed saturation and value for bright colors.
     r, g, b = colorsys.hsv_to_rgb(h, 0.7, 0.9)
     color = f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
+
     return {
         "color": color,
-        "marker": "s",  
+        "marker": "s",
         "size": 200,
     }
 
-# define model parameters with types and default values for the SolaraViz interface 
-# moore is a boolean parameter that controls the neighborhood type (von Neumann or Moore)
+
+# Define model parameters with types and default values for the SolaraViz interface.
+# neighborhood_type controls the interaction range: 4, 8, or 12 neighbors.
 model_params = {
     "width": {
         "type": "SliderInt",
@@ -71,9 +75,7 @@ model_params = {
 
 
 @solara.component
-@solara.component
 def ParameterDisplay(model):
-    # Display model parameters to help user understand current state of the simulation
     neighborhood_labels = {
         "von_neumann_4": "von Neumann (4)",
         "moore_8": "Moore (8)",
@@ -100,7 +102,6 @@ def ParameterDisplay(model):
     )
 
 
-
 model = CultureModel()
 
 SpaceComponent = make_space_component(agent_portrayal)
@@ -113,4 +114,5 @@ page = SolaraViz(
     model_params=model_params,
     name="Axelrod (1997) — Dissemination of Culture",
 )
+
 page
