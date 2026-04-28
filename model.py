@@ -208,7 +208,9 @@ class CultureModel(Model):
     def step(self):
         if not self.running:
             return  # already stable, skip
-        
+# Axelrod's original time unit is one random interaction event.
+# For GUI readability, one Mesa step is treated as one approximate sweep:
+# width * height random events, still sampled asynchronously with replacement.
         events_per_step = self.width * self.height
         for _ in range(events_per_step):
             agent = self.random.choice(list(self.agents))

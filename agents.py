@@ -34,7 +34,7 @@ class CultureAgent(Agent):
         Randomly pick a neighbor, calculate cultural similarity, and with that probability interact:
         if interact, randomly pick one of the features where they differ and copy that trait from the neighbor.
         """
-        # Get neighbors (von Neumann=4 or Moore=8 depending on model.moore), excluding self.
+        # Get neighbors according to the selected neighborhood_type, excluding self..
         # Edge/corner agents have fewer neighbors (torus=False).
         neighbors = self.model.get_cultural_neighbors(self.pos)
         if not neighbors:

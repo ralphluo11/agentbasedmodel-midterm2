@@ -4,6 +4,9 @@ from mesa.visualization import SolaraViz, make_space_component, make_plot_compon
 
 from model import CultureModel
 
+"Culture Map: each cell is colored according to the agent's complete cultural vector. "
+"Agents with identical cultures are assigned the same color; colors are used as a visual aid, "
+"while the formal region count is computed directly from cultural vectors."
 
 def agent_portrayal(agent):
     """
@@ -33,7 +36,7 @@ model_params = {
         "value": 10,
         "label": "Grid width",
         "min": 5,
-        "max": 20,
+        "max": 50,
         "step": 1,
     },
     "height": {
@@ -41,7 +44,7 @@ model_params = {
         "value": 10,
         "label": "Grid height",
         "min": 5,
-        "max": 20,
+        "max": 50,
         "step": 1,
     },
     "num_features": {
