@@ -76,7 +76,7 @@ model_params = {
     },
 }
 
-
+# show the model parameters and a legend for the visualization and allow changes for neighborhood type 
 @solara.component
 def ParameterDisplay(model):
     neighborhood_labels = {

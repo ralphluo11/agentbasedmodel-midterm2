@@ -145,7 +145,7 @@ class CultureModel(Model):
 
         """
 
-        Return neighbors according to Axelrod-style interaction ranges.
+        Return neighbors according to Axelrod-style interaction ranges, which can be von Neumann (4), Moore (8), or extended (12).
 
         """
 
